@@ -7,27 +7,6 @@
     android:padding="8dp"
     tools:context=".view.MainActivity">
 
-    <EditText
-        android:id="@+id/editTask"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Task"
-        app:layout_constraintEnd_toStartOf="@+id/buttonIserir"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonIserir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:text="Inserir"
-        android:textColor="@color/colcorWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listToDoRecyclerView"
         android:layout_width="0dp"
@@ -36,6 +15,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTask"
+        app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/view_item_todo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

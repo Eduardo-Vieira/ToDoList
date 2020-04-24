@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">To Do List</string>
+
+    <string name="hint_task">Tarefa...</string>
+    <string name="button_save">Adicionar</string>
+    <string name="empty_not_saved">Tarefa não salva porque está vazia.</string>
+
 </resources>
