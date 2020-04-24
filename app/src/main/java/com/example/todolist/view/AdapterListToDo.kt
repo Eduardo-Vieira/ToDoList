@@ -29,6 +29,13 @@ class AdapterListToDo(var listItens:List<ToDo> = arrayListOf()): RecyclerView.Ad
         this.listItens = listItens
         notifyDataSetChanged()
     }
+    fun removeItem(position: Int){
+        notifyItemRemoved(position)
+    }
+
+    fun getItemList(position: Int):ToDo {
+        return listItens[position]
+    }
 
     fun setOnRemoveClickListener(onRemoveClickListener:OnRemoveClickListener){
         this.onRemoveClickListener = onRemoveClickListener
