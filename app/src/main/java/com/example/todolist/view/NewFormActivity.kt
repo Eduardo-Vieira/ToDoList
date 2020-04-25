@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.todolist.R
 import kotlinx.android.synthetic.main.activity_form.*
 
-class FormActivity : AppCompatActivity() {
+class NewFormActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -12,7 +12,8 @@ import kotlinx.android.synthetic.main.view_item_todo.view.*
 
 class AdapterListToDo(var listItens:List<ToDo> = arrayListOf()): RecyclerView.Adapter<AdapterListToDo.ItemViewHolder>() {
 
-    private lateinit var onRemoveClickListener:OnRemoveClickListener
+    private lateinit var onRemoverClickListener:OnClickListener
+    private lateinit var onEditClickListener:OnClickListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -29,26 +30,32 @@ class AdapterListToDo(var listItens:List<ToDo> = arrayListOf()): RecyclerView.Ad
         this.listItens = listItens
         notifyDataSetChanged()
     }
-    fun removeItem(position: Int){
-        notifyItemRemoved(position)
-    }
 
     fun getItemList(position: Int):ToDo {
         return listItens[position]
     }
 
-    fun setOnRemoveClickListener(onRemoveClickListener:OnRemoveClickListener){
-        this.onRemoveClickListener = onRemoveClickListener
+    fun setOnRemoveClickListener(onClickListener:OnClickListener){
+        this.onRemoverClickListener = onClickListener
+    }
+
+    fun setOnEditClickListener(onClickListener:OnClickListener){
+        this.onEditClickListener = onClickListener
     }
 
    inner class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val txtTask: TextView = itemView.txtTask
         private val bntRemover:Button = itemView.bntRemover
+        private val btnEditar:Button = itemView.btnEditar
         private var item:ToDo? = null
 
        init {
             bntRemover.setOnClickListener {
-                onRemoveClickListener.onItemClick(this.item, adapterPosition)
+                onRemoverClickListener.onItemClick(this.item, adapterPosition)
+            }
+
+            btnEditar.setOnClickListener {
+                onEditClickListener.onItemClick(this.item, adapterPosition)
             }
         }
 

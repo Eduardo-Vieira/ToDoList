@@ -20,10 +20,12 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
-    private val formActivityRequestCode = 1
+    private val newFormActivityRequestCode = 1
+    private val editFormActivityRequestCode = 2
 
     private val db: Repository by inject()
     private val adapter = AdapterListToDo()
+    private var uidEdit = 0
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.mnu_mainactivity, menu)
@@ -32,14 +34,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.nmu_new_item -> showFormActivity()
+            R.id.nmu_new_item -> showNewFormActivity()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun showFormActivity(){
-        val intent = Intent(this@MainActivity, FormActivity::class.java)
-        startActivityForResult(intent, formActivityRequestCode)
+    fun showNewFormActivity(){
+        val intent = Intent(this@MainActivity, NewFormActivity::class.java)
+        startActivityForResult(intent, newFormActivityRequestCode)
+    }
+
+    fun showEditFormActivity(item:ToDo){
+        val intent = Intent(this@MainActivity, EditFormActivity::class.java)
+        intent.putExtra("ToDo", item)
+        startActivityForResult(intent, editFormActivityRequestCode)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,9 +59,18 @@ class MainActivity : AppCompatActivity() {
 
         listToDoRecyclerView.adapter = adapter
 
-        adapter.setOnRemoveClickListener(object :OnRemoveClickListener {
+        adapter.setOnRemoveClickListener(object :OnClickListener {
             override fun onItemClick(item: ToDo?, posicao: Int) {
                 item?.let { removeItem(it) }
+            }
+        })
+
+        adapter.setOnEditClickListener(object :OnClickListener{
+            override fun onItemClick(item: ToDo?, posicao: Int) {
+                item?.let {
+                    uidEdit = it.uid!!
+                    showEditFormActivity(it)
+                }
             }
         })
 
@@ -83,11 +100,17 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == formActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            data?.getStringExtra(FormActivity.EXTRA_REPLY)?.let {
+        if (requestCode == newFormActivityRequestCode && resultCode == Activity.RESULT_OK) {
+            data?.getStringExtra(NewFormActivity.EXTRA_REPLY)?.let {
                 db.addItem(ToDo(null, it))
             }
-        } else {
+        }
+        else if (requestCode == editFormActivityRequestCode  && resultCode == Activity.RESULT_OK){
+            data?.getStringExtra(EditFormActivity.EXTRA_REPLY)?.let {
+                db.updateItem(ToDo(uidEdit, it))
+            }
+        }
+        else {
             Toast.makeText(
                 applicationContext,
                 R.string.empty_not_saved,

@@ -1,10 +1,7 @@
 package com.example.todolist.db.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.example.todolist.db.model.ToDo
 
 @Dao
@@ -17,4 +14,7 @@ interface ToDoDao {
 
     @Delete
     suspend fun delete(toDo: ToDo)
+
+    @Update
+    suspend fun update(toDo: ToDo)
 }

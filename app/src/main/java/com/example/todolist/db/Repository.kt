@@ -16,6 +16,12 @@ class Repository(private val toDo:ToDoDao) {
         }
     }
 
+    fun updateItem(row: ToDo){
+        coroutineScope.launch {
+            update(row)
+        }
+    }
+
     fun deleteItem(row: ToDo){
         coroutineScope.launch {
             delete(row)
@@ -31,6 +37,11 @@ class Repository(private val toDo:ToDoDao) {
     private suspend fun delete(row: ToDo){
         withContext(Dispatchers.IO) {
             toDo.delete(row)
+        }
+    }
+    private suspend fun update(row: ToDo){
+        withContext(Dispatchers.IO) {
+            toDo.update(row)
         }
     }
 }

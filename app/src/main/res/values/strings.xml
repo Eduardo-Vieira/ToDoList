@@ -3,6 +3,7 @@
 
     <string name="hint_task">Tarefa...</string>
     <string name="button_save">Adicionar</string>
+    <string name="button_edit">Editar</string>
     <string name="empty_not_saved">Tarefa não salva porque está vazia.</string>
     <string name="delete_task">Tarefa deletada da lista.</string>
 

@@ -4,8 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+import java.io.Serializable
+
 @Entity
 data class ToDo(
     @PrimaryKey(autoGenerate = true) val uid: Int?,
-    @ColumnInfo(name = "task") val task: String?
-)
+    @ColumnInfo(name = "task") var task: String?
+):Serializable
