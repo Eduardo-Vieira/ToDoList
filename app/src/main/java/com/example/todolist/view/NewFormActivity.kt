@@ -4,9 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.todolist.R
-import kotlinx.android.synthetic.main.activity_form.*
 
 class NewFormActivity : AppCompatActivity() {
 
@@ -14,12 +15,15 @@ class NewFormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
 
-        button_save.setOnClickListener {
+        val editTask = this.findViewById<TextView>(R.id.edit_Task)
+        val buttonSave = this.findViewById<Button>(R.id.button_save)
+
+        buttonSave.setOnClickListener {
             val replyIntent = Intent()
-            if (TextUtils.isEmpty(edit_Task.text)) {
+            if (TextUtils.isEmpty(editTask.text)) {
                 setResult(Activity.RESULT_CANCELED, replyIntent)
             } else {
-                val task = edit_Task.text.toString()
+                val task = editTask.text.toString()
                 replyIntent.putExtra(EXTRA_REPLY, task)
                 setResult(Activity.RESULT_OK, replyIntent)
             }

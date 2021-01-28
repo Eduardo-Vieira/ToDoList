@@ -19,6 +19,7 @@ open class RecyclerItemTouchHelper(mContext:Context) : ItemTouchHelper.Callback(
     private var deleteDrawable: Drawable? = null
     private var intrinsicWidth = 0
     private var intrinsicHeight = 0
+
     init {
         mBackground = ColorDrawable()
         backgroundColor = Color.parseColor("#b80f0a")
@@ -55,35 +56,35 @@ open class RecyclerItemTouchHelper(mContext:Context) : ItemTouchHelper.Callback(
     ) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         val itemView: View = viewHolder.itemView
-        val itemHeight: Int = itemView.getHeight()
+        val itemHeight: Int = itemView.height
 
-        val isCancelled = dX === 0f && !isCurrentlyActive
+        val isCancelled = dX == 0f && !isCurrentlyActive
 
         if (isCancelled) {
             clearCanvas(
                 c,
-                itemView.getRight() + dX,
-                itemView.getTop().toFloat(),
-                itemView.getRight().toFloat(),
-                itemView.getBottom().toFloat()
+                itemView.right + dX,
+                itemView.top.toFloat(),
+                itemView.right.toFloat(),
+                itemView.bottom.toFloat()
             )
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             return
         }
 
-        mBackground!!.setColor(backgroundColor)
+        mBackground!!.color = backgroundColor
         mBackground!!.setBounds(
-            itemView.getRight() + dX.toInt(),
-            itemView.getTop(),
-            itemView.getRight(),
-            itemView.getBottom()
+            itemView.right + dX.toInt(),
+            itemView.top,
+            itemView.right,
+            itemView.bottom
         )
         mBackground!!.draw(c)
 
-        val deleteIconTop: Int = itemView.getTop() + (itemHeight - intrinsicHeight) / 2
+        val deleteIconTop: Int = itemView.top + (itemHeight - intrinsicHeight) / 2
         val deleteIconMargin: Int = (itemHeight - intrinsicHeight) / 2
-        val deleteIconLeft: Int = itemView.getRight() - deleteIconMargin - intrinsicWidth
-        val deleteIconRight: Int = itemView.getRight() - deleteIconMargin
+        val deleteIconLeft: Int = itemView.right - deleteIconMargin - intrinsicWidth
+        val deleteIconRight: Int = itemView.right - deleteIconMargin
         val deleteIconBottom: Int = deleteIconTop + intrinsicHeight
 
 

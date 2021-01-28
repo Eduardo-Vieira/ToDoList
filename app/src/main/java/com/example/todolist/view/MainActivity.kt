@@ -11,10 +11,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.todolist.R
 import com.example.todolist.db.Repository
 import com.example.todolist.db.model.ToDo
-import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 
@@ -34,17 +34,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.nmu_new_item -> showNewFormActivity()
+            R.id.nmu_new_item -> openNewFormActivity()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun showNewFormActivity(){
+    private fun openNewFormActivity(){
         val intent = Intent(this@MainActivity, NewFormActivity::class.java)
         startActivityForResult(intent, newFormActivityRequestCode)
     }
 
-    fun showEditFormActivity(item:ToDo){
+    private fun openEditFormActivity(item:ToDo){
         val intent = Intent(this@MainActivity, EditFormActivity::class.java)
         intent.putExtra("ToDo", item)
         startActivityForResult(intent, editFormActivityRequestCode)
@@ -54,25 +54,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val listToDoRecyclerView = this.findViewById<RecyclerView>(R.id.listToDoRecyclerView)
+        val mySwipeRefreshLayout = this.findViewById<SwipeRefreshLayout>(R.id.mySwipeRefreshLayout)
+
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         listToDoRecyclerView.addItemDecoration(divider)
 
         listToDoRecyclerView.adapter = adapter
 
         adapter.setOnRemoveClickListener(object :OnClickListener {
-            override fun onItemClick(item: ToDo?, posicao: Int) {
+            override fun onItemClick(item: ToDo?, position: Int) {
                 item?.let { removeItem(it) }
             }
         })
 
         adapter.setOnEditClickListener(object :OnClickListener{
-            override fun onItemClick(item: ToDo?, posicao: Int) {
-                item?.let {
-                    uidEdit = it.uid!!
-                    showEditFormActivity(it)
+            override fun onItemClick(item: ToDo?, position: Int) {
+                item?.let { toDo ->
+                    toDo.uid?.let { uidEdit = it }
+                    openEditFormActivity(toDo)
                 }
             }
         })
+
+        mySwipeRefreshLayout.setOnRefreshListener {
+            db.getAll()
+            mySwipeRefreshLayout.isRefreshing = false
+        }
 
         db.getAll().observe(this, Observer {
             adapter.update(it)

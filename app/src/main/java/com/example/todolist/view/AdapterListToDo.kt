@@ -10,7 +10,9 @@ import com.example.todolist.R
 import com.example.todolist.db.model.ToDo
 import kotlinx.android.synthetic.main.view_item_todo.view.*
 
-class AdapterListToDo(var listItens:List<ToDo> = arrayListOf()): RecyclerView.Adapter<AdapterListToDo.ItemViewHolder>() {
+class AdapterListToDo(
+    private var itens:List<ToDo> = listOf()
+): RecyclerView.Adapter<AdapterListToDo.ItemViewHolder>() {
 
     private lateinit var onRemoverClickListener:OnClickListener
     private lateinit var onEditClickListener:OnClickListener
@@ -20,19 +22,19 @@ class AdapterListToDo(var listItens:List<ToDo> = arrayListOf()): RecyclerView.Ad
            .inflate(R.layout.view_item_todo, parent,false)
         return ItemViewHolder(view)
     }
-    override fun getItemCount(): Int = listItens.size
+    override fun getItemCount(): Int = itens.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.setItens(listItens[position])
+        holder.setItem(itens[position])
     }
 
-    fun update(listItens:List<ToDo>){
-        this.listItens = listItens
+    fun update(itens:List<ToDo>){
+        this.itens = itens
         notifyDataSetChanged()
     }
 
     fun getItemList(position: Int):ToDo {
-        return listItens[position]
+        return itens[position]
     }
 
     fun setOnRemoveClickListener(onClickListener:OnClickListener){
@@ -59,7 +61,7 @@ class AdapterListToDo(var listItens:List<ToDo> = arrayListOf()): RecyclerView.Ad
             }
         }
 
-        fun setItens(item:ToDo){
+        fun setItem(item:ToDo){
             this.item = item
             txtTask.text = item.task
         }

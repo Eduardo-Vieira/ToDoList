@@ -4,9 +4,9 @@ import com.example.todolist.db.dao.ToDoDao
 import com.example.todolist.db.model.ToDo
 import kotlinx.coroutines.*
 
-class Repository(private val toDo:ToDoDao) {
+open class Repository(private val toDo:ToDoDao) {
     private val repositoryJob = Job()
-    protected val coroutineScope = CoroutineScope(repositoryJob + Dispatchers.Main)
+    private val coroutineScope = CoroutineScope(repositoryJob + Dispatchers.Main)
 
     fun getAll() = toDo.getAll()
 
