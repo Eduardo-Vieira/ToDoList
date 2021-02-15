@@ -77,6 +77,14 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        adapter.setOnCheckedClickListener(object :OnClickListener{
+            override fun onItemClick(item: ToDo?, position: Int) {
+                item?.let { toDo ->
+                    db.updateItem(toDo)
+                }
+            }
+        })
+
         mySwipeRefreshLayout.setOnRefreshListener {
             db.getAll()
             mySwipeRefreshLayout.isRefreshing = false
