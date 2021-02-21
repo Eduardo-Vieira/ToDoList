@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -17,7 +18,6 @@ import com.example.todolist.db.Repository
 import com.example.todolist.db.model.ToDo
 import org.koin.android.ext.android.inject
 
-
 class MainActivity : AppCompatActivity() {
 
     private val newFormActivityRequestCode = 1
@@ -26,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     private val db: Repository by inject()
     private val adapter = AdapterListToDo()
     private var uidEdit = 0
+    private lateinit var listToDoRecyclerView: RecyclerView
+    private var startAnimate:Boolean = true
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.mnu_mainactivity, menu)
@@ -54,21 +56,54 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listToDoRecyclerView = this.findViewById<RecyclerView>(R.id.listToDoRecyclerView)
-        val mySwipeRefreshLayout = this.findViewById<SwipeRefreshLayout>(R.id.mySwipeRefreshLayout)
+        configRecyclerViewToDo()
 
-        val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        configClickListener()
+
+        configSwipeRefreshLayout()
+
+        initObserver()
+
+        configRecyclerItemTouchHelper()
+    }
+
+    private fun configRecyclerViewToDo() {
+        listToDoRecyclerView = this.findViewById(R.id.listToDoRecyclerView)
+
+        val divider =
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+
         listToDoRecyclerView.addItemDecoration(divider)
-
         listToDoRecyclerView.adapter = adapter
+    }
 
-        adapter.setOnRemoveClickListener(object :OnClickListener {
+    private fun runLayoutAnimation():Boolean {
+        listToDoRecyclerView.apply{
+            layoutAnimation = AnimationUtils
+                .loadLayoutAnimation(context, R.anim.animation_layout)
+            adapter?.notifyDataSetChanged()
+            scheduleLayoutAnimation()
+        }
+        return !startAnimate
+    }
+
+    private fun configSwipeRefreshLayout(){
+        val mySwipeRefreshLayout = this.findViewById<SwipeRefreshLayout>(R.id.mySwipeRefreshLayout)
+        mySwipeRefreshLayout.setOnRefreshListener {
+            startAnimate = true
+            initObserver()
+            mySwipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+    private fun configClickListener() {
+        adapter.setOnRemoveClickListener(object : OnClickListener {
             override fun onItemClick(item: ToDo?, position: Int) {
                 item?.let { removeItem(it) }
             }
         })
 
-        adapter.setOnEditClickListener(object :OnClickListener{
+        adapter.setOnEditClickListener(object : OnClickListener {
             override fun onItemClick(item: ToDo?, position: Int) {
                 item?.let { toDo ->
                     toDo.uid?.let { uidEdit = it }
@@ -77,32 +112,32 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        adapter.setOnCheckedClickListener(object :OnClickListener{
+        adapter.setOnCheckedClickListener(object : OnClickListener {
             override fun onItemClick(item: ToDo?, position: Int) {
                 item?.let { toDo ->
                     db.updateItem(toDo)
                 }
             }
         })
+    }
 
-        mySwipeRefreshLayout.setOnRefreshListener {
-            db.getAll()
-            mySwipeRefreshLayout.isRefreshing = false
-        }
-
-        db.getAll().observe(this, Observer {
-            adapter.update(it)
-        })
-
-        val recyclerItemTouchHelper = object :RecyclerItemTouchHelper(this) {
+    private fun configRecyclerItemTouchHelper() {
+        val recyclerItemTouchHelper = object : RecyclerItemTouchHelper(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position:Int = viewHolder.adapterPosition
+                val position: Int = viewHolder.adapterPosition
                 val item = adapter.getItemList(position)
                 removeItem(item)
             }
         }
         val itemTouchHelper = ItemTouchHelper(recyclerItemTouchHelper)
         itemTouchHelper.attachToRecyclerView(listToDoRecyclerView)
+    }
+
+    private fun initObserver() {
+        db.getAll().observe(this, Observer {
+            adapter.update(it)
+            if(startAnimate) startAnimate = runLayoutAnimation()
+        })
     }
 
     private fun removeItem(item:ToDo){
