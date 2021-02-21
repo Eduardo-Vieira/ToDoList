@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -27,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val adapter = AdapterListToDo()
     private var uidEdit = 0
     private lateinit var listToDoRecyclerView: RecyclerView
+    private lateinit var imageViewBlank:ImageView
     private var startAnimate:Boolean = true
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -56,6 +59,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        configImageBlank()
+
         configRecyclerViewToDo()
 
         configClickListener()
@@ -65,6 +70,24 @@ class MainActivity : AppCompatActivity() {
         initObserver()
 
         configRecyclerItemTouchHelper()
+    }
+
+    private fun configImageBlank() {
+        imageViewBlank = this.findViewById(R.id.imageViewBlank)
+        imageViewBlank.visibility = View.VISIBLE
+    }
+
+    private fun setVisibleBlank(value:Boolean){
+        when(value){
+            true -> {
+                imageViewBlank.visibility = View.VISIBLE
+                listToDoRecyclerView.visibility = View.GONE
+            }
+            false ->{
+                imageViewBlank.visibility = View.GONE
+                listToDoRecyclerView.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun configRecyclerViewToDo() {
@@ -135,8 +158,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initObserver() {
         db.getAll().observe(this, Observer {
-            adapter.update(it)
-            if(startAnimate) startAnimate = runLayoutAnimation()
+            if(it.isEmpty()){
+                setVisibleBlank(true)
+            }else {
+                setVisibleBlank(false)
+                adapter.update(it)
+                if (startAnimate) startAnimate = runLayoutAnimation()
+            }
         })
     }
 
